@@ -3,10 +3,10 @@ let state = "waiting";
 
 let cupImg = document.querySelector(".coffee-cup img");
 let progressBar = document.querySelector(".progress-bar");
+let balanceInput = document.querySelector("input[placeholder='баланс']");
 cupImg.onclick = takeCoffee;
 
- let balanceInput = document.querySelector("input[placeholder='баланс']");
-  
+ 
  function buyCoffee(name, price, element) {
    if (state != "waiting") {
      return;
@@ -100,8 +100,12 @@ function takeMoney(event) {
     
     bill.onmouseup = function() {
       window.onmousemove = null;
-      console.log( inAtm(bill) );
+    if ( inAtm(bill) ) { //если купюра в атм, нам нужно получить его значение.  //console.log(+bill.getAttribute('cost'));
+      let billCost = +bill.getAttribute("cost");
+      balanceInput.value = +balanceInput.value + billCost;
+      bill.remove();
     }
+  }
 }
   
 function inAtm(bill) {
@@ -129,4 +133,46 @@ function inAtm(bill) {
     } else {
       return false;
   }
+}
+//----------Сдача---------------
+
+let changeButton = document.querySelector(".change-btn");
+/*changeButton.onclick = function () {  это ф-ия обертки
+  takeChange();
+}*/ 
+ changeButton.onclick = takeChange;
+ 
+ function takeChange() {
+   tossCoin("10");
+ }
+ 
+ function tossCoin(cost) {
+  let changeBox = document.querySelector(".change-box");
+  changeBox.style.position = "relative";
+  let changeBoxCoords = changeBox.getBoundingClientRect();
+  let randomWidth = getRandomInt(0, changeBoxCoords.width - 50);
+  let randomHeight = getRandomInt(0, changeBoxCoords.height - 50);
+  console.log(randomWidth, randomHeight);
+  /*changeBox.innerHTML +=`
+   <img src="img/10rub.png" class="coin">
+  `;*/
+   let coin = document.createElement("img"); //создает эл-т,но где-то в вакууме
+   coin.setAttribute('src', "img/10rub.png");
+   coin.style.wigth = "50px";
+   coin.style.heght = "50px";
+   changeBox.append(coin);//добавляет в конец 
+   coin.style.position = "absolute";
+   coin.style.top = randomHeight + "px";
+   coin.style.left = randomWidth + "px";
+   
+    //changeBox.prepend(coin); //добавляет в начало
+  //changeBox.before(coin); //перед элементом
+  //changeBox.after(coin); //после элемента
+  //changeBox.replaceWith(coin);//заменяет элемент (бокс на монетку, например)
+  }
+  
+ function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
 }
